@@ -37,7 +37,10 @@ func (gc *GarbageCollector) MarkGray(obj *Object) {
 	gc.graySet = append(gc.graySet, obj)
 }
 
-func (gc *GarbageCollector) Collect() {
+func (gc *GarbageCollector) Collect() error {
+	if gc.root == nil {
+		return fmt.Errorf("root object is nil")
+	}
 	gc.InitializeWhiteObjects()
 	gc.MarkGray(gc.root)
 	for len(gc.graySet) > 0 {
@@ -50,9 +53,14 @@ func (gc *GarbageCollector) Collect() {
 		}
 		currentObject.color = Black
 	}
+	var newHeap []*Object
 	for _, obj := range gc.heap {
 		if obj.color == White {
 			fmt.Println("Collecting unreachable object")
+		} else {
+			newHeap = append(newHeap, obj)
 		}
 	}
+	gc.heap = newHeap
+	return nil
 }
