@@ -8,16 +8,20 @@ const (
 	Black
 )
 
+// Object represents an object in the heap
 type Object struct {
 	color      int
 	References []*Object
 }
+
+// GarbageCollector represents a garbage collector that collects unreachable objects
 type GarbageCollector struct {
 	heap    []*Object
 	graySet []*Object
 	root    *Object
 }
 
+// NewGarbageCollector creates a new garbage collector
 func NewGarbageCollector(root *Object, heap []*Object) *GarbageCollector {
 	return &GarbageCollector{
 		root:    root,
@@ -26,17 +30,20 @@ func NewGarbageCollector(root *Object, heap []*Object) *GarbageCollector {
 	}
 }
 
+// InitializeWhiteObjects initializes all objects in the heap to white
 func (gc *GarbageCollector) InitializeWhiteObjects() {
 	for _, obj := range gc.heap {
 		obj.color = White
 	}
 }
 
+// MarkGray marks an object as gray and adds it to the gray set
 func (gc *GarbageCollector) MarkGray(obj *Object) {
 	obj.color = Gray
 	gc.graySet = append(gc.graySet, obj)
 }
 
+// Collect collects unreachable objects
 func (gc *GarbageCollector) Collect() error {
 	if gc.root == nil {
 		return fmt.Errorf("root object is nil")
